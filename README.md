@@ -1,6 +1,6 @@
 # Can I Homebrew?
 
-Website for checking if your game console can be hacked or otherwise run homebrew applications
+Website for checking if your game console can be hacked or otherwise run homebrew applications. Hosted at https://canihomebrew.com
 
 Loosely inspired by https://canijailbreak.com
 
