@@ -1,0 +1,35 @@
+{
+  "name": "canihomebrew",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "build": "npm run lint && npm run clean && npx tsc && npx tsc-alias",
+    "clean": "rimraf ./dist",
+    "copy-static": "copyfiles -e \"src/**/*.ts\" -u 1 \"src/**/*\" dist",
+    "start": "node .",
+    "start:dev": "cross-env NODE_ENV=development node ."
+  },
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@stylistic/eslint-plugin-ts": "^2.11.0",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0",
+    "rimraf": "^6.0.1",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.17.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "express-handlebars": "^8.0.1",
+    "morgan": "^1.10.0"
+  }
+}

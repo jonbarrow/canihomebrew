@@ -1,0 +1,488 @@
+<div class="bg-white p-8 rounded-lg shadow-md w-1/3 relative">
+	<a href="https://github.com/jonbarrow/canihomebrew" target="_blank" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800">
+		<i class="fab fa-github text-2xl"></i>
+	</a>
+
+	<h1 class="text-2xl font-bold mb-6 text-center">Can I Homebrew?</h1>
+
+	<!--
+
+	TODO - Examples for auto-detection notices, for when that's added
+
+	<div id="autoDetectResult" class="mb-4 p-4 bg-yellow-100 rounded">
+		<h2 class="font-bold text-yellow-800">No Console Detected</h2>
+		<p class="text-yellow-700">We couldn't automatically detect your console. Please manually enter your console details below.</p>
+	</div>
+
+	<div id="autoDetectResult" class="mb-4 p-4 bg-green-100 rounded">
+		<h2 class="font-bold text-green-800">Automatically Detected Console</h2>
+		<p id="detectedConsoleInfo" class="text-green-700">
+			Brand: Nintendo<br>
+			Model: Switch<br>
+			Firmware: 16.0.0
+		</p>
+	</div>
+
+	-->
+
+	<div class="mb-6 p-4 bg-blue-100 rounded text-sm text-blue-800">
+		<p class="font-bold">Missing Or Incorrect Data?</p>
+		<p>Help improve this tool! File an issue or pull request on GitHub to add support for more consoles, firmware versions and guides.</p>
+	</div>
+
+	<div class="space-y-4">
+		<div>
+			<label class="block mb-2">Console</label>
+			<select name="console" id="consoleSelect" class="w-full p-2 border rounded" required>
+				<option value="">Select Console</option>
+				<optgroup label="Nintendo">
+					<option value="wiiu">Wii U</option>
+					<option value="3ds">3DS Family</option>
+				</optgroup>
+				<optgroup label="Sony">
+					<option value="ps3">PlayStation 3</option>
+					<option value="ps4">PlayStation 4</option>
+				</optgroup>
+			</select>
+		</div>
+
+		<!-- TODO - Add a serial number input/select list, for Nintendo Switch, etc.  -->
+
+		<div id="firmwareVersionInput" class="hidden">
+			<label class="block mb-2">Firmware Version</label>
+			<select name="firmware" id="firmwareVersionSelect" class="w-full p-2 border rounded" required></select>
+		</div>
+	</div>
+
+	<div id="result" class="mt-4 text-center"></div>
+
+	<div id="compatibilityNotice" class="hidden mt-6 p-4 rounded bg-green-100">
+		<div class="flex items-center mb-2">
+			<i id="compatibilityIcon" class="fas fa-check-circle text-green-600 mr-2 text-xl"></i>
+			<h3 id="compatibilityTitle" class="font-bold text-green-800"></h3>
+		</div>
+		<p id="compatibilityMessage" class="mb-2 text-green-700"></p>
+	</div>
+
+	<div id="incompatibilityNotice" class="hidden mt-6 p-4 rounded bg-red-100">
+		<div class="flex items-center mb-2">
+			<i id="incompatibilityIcon" class="fas fa-times-circle text-red-600 mr-2 text-xl"></i>
+			<h3 id="incompatibilityTitle" class="font-bold text-red-800">Homebrew not possible</h3>
+		</div>
+		<p id="incompatibilityMessage" class="mb-2 text-red-700">Your console cannot be hacked yet.</p>
+	</div>
+</div>
+
+<script type="module">
+	// TODO - Remove this in favor of something compatible with browsers used by older consoles like Wii U/3DS
+	import semver from 'https://cdn.jsdelivr.net/npm/semver@7.6.3/+esm';
+
+	const consoleSelect = document.getElementById('consoleSelect');
+	const firmwareVersionInput = document.getElementById('firmwareVersionInput');
+	const firmwareVersionSelect = document.getElementById('firmwareVersionSelect');
+	const compatibilityNotice = document.getElementById('compatibilityNotice');
+	const incompatibilityNotice = document.getElementById('incompatibilityNotice');
+	const compatibilityTitle = document.getElementById('compatibilityTitle');
+	const compatibilityMessage = document.getElementById('compatibilityMessage');
+
+	// TODO - Add more consoles like PS Vite, Nintendo Switch, Xbox, etc.
+	const consoles = {
+		'wiiu': {
+			selected: validateWiiU
+		},
+		'3ds': {
+			selected: validate3DS
+		},
+		'ps3': {
+			firmwares: [ // Obtained from https://darksoftware.xyz/PS3/FWlist
+				'4.90',
+				'4.89',
+				'4.88',
+				'4.87',
+				'4.86',
+				'4.85',
+				'4.84',
+				'4.83',
+				'4.82',
+				'4.81',
+				'4.80',
+				'4.78',
+				'4.76',
+				'4.75',
+				'4.70',
+				'4.66',
+				'4.65',
+				'4.60',
+				'4.55',
+				'4.53',
+				'4.50',
+				'4.46',
+				'4.45',
+				'4.41',
+				'4.40',
+				'4.31',
+				'4.30',
+				'4.25',
+				'4.21',
+				'4.20',
+				'4.11',
+				'4.10',
+				'4.00',
+				'3.74',
+				'3.73',
+				'3.72',
+				'3.70',
+				'3.66',
+				'3.65',
+				'3.61',
+				'3.60',
+				'3.56',
+				'3.55',
+				'3.50',
+				'3.42',
+				'3.41',
+				'3.40',
+				'3.30',
+				'3.21',
+				'3.16',
+				'3.15',
+				'3.10',
+				'3.01',
+				'3.00',
+				'2.80',
+				'2.76',
+				'2.70',
+				'2.60',
+				'2.53',
+				'2.52',
+				'2.50',
+				'2.43',
+				'2.42',
+				'2.41',
+				'2.40',
+				'2.36',
+				'2.35',
+				'2.30',
+				'2.20',
+				'2.17',
+				'2.16',
+				'2.10',
+				'2.01',
+				'2.00',
+				'1.94',
+				'1.93',
+				'1.92',
+				'1.90',
+				'1.82',
+				'1.81',
+				'1.80',
+				'1.70',
+				'1.60',
+				'1.54',
+				'1.51',
+				'1.50',
+				'1.32',
+				'1.31',
+				'1.30',
+				'1.11',
+				'1.10',
+				'1.02'
+			],
+			selected: () => {
+				showFirmwareVersionList(consoles.ps3.firmwares);
+			},
+			firmwareSelected: validatePS3
+		},
+		'ps4': {
+			firmwares: [ // * Obtained from https://darthsternie.net/ps4-firmwares/
+				'11.02',
+				'11.00',
+				'10.71',
+				'10.70',
+				'10.50',
+				'10.01',
+				'10.00',
+				'9.60',
+				'9.51',
+				'9.50',
+				'9.04',
+				'9.03',
+				'9.00',
+				'8.52',
+				'8.50',
+				'8.03',
+				'8.01',
+				'8.00',
+				'7.55',
+				'7.51',
+				'7.50',
+				'7.02',
+				'7.01',
+				'7.00',
+				'6.72',
+				'6.71',
+				'6.70',
+				'6.51',
+				'6.50',
+				'6.20',
+				'6.02',
+				'6.00',
+				'5.56',
+				'5.55',
+				'5.53-01',
+				'5.53',
+				'5.50',
+				'5.05',
+				'5.03',
+				'5.01',
+				'5.00',
+				'4.74',
+				'4.73',
+				'4.72',
+				'4.71',
+				'4.70',
+				'4.55',
+				'4.50',
+				'4.07',
+				'4.06',
+				'4.05',
+				'4.01',
+				'4.00',
+				'3.55',
+				'3.50',
+				'3.15',
+				'3.11',
+				'3.10',
+				'3.00',
+				'2.57',
+				'2.55',
+				'2.51',
+				'2.50',
+				'2.04',
+				'2.03',
+				'2.02',
+				'2.01',
+				'2.00',
+				'1.76',
+				'1.75',
+				'1.74',
+				'1.72',
+				'1.71',
+				'1.70',
+				'1.62',
+				'1.61',
+				'1.60',
+				'1.52',
+				'1.51',
+				'1.50',
+				'1.07',
+				'1.06',
+				'1.05'
+			],
+			selected: () => {
+				showFirmwareVersionList(consoles.ps4.firmwares);
+			},
+			firmwareSelected: validatePS4
+		}
+	}
+
+	function formatLinks(text, links) {
+		for (const link of links) {
+			text = text.replaceAll(link.placeholder, `<a href="${link.href}" target="_blank" class="text-green-800 font-semibold hover:underline">${link.text} <i class="fas fa-external-link-alt ml-1"></i></a>`);
+		}
+
+		return text;
+	}
+
+	function formatPSVersion(firmware) {
+		// * PlayStation firmwares use non-standard semver.
+		// * Convert them to standard semvers for comparisions
+		firmware = firmware.replace(/-/g, '.'); // * Account for versions like 5.53-01
+		const parts = firmware.split('.');
+
+		if (parts.length < 3) {
+			parts.push(0); // * Account for versions like 4.71
+		}
+
+		return parts.map(part => parseInt(part)).join('.'); // * account for versions like 4.07
+	}
+
+	function showFirmwareVersionList(firmwares) {
+		firmwareVersionSelect.innerHTML = '';
+
+		const defaultOption = document.createElement('option');
+
+		defaultOption.value = '';
+		defaultOption.text = 'Select Firmware';
+
+		firmwareVersionSelect.add(defaultOption);
+
+		for (const version of firmwares) {
+			const firmwareOption = document.createElement('option');
+
+			firmwareOption.value = version;
+			firmwareOption.text = version;
+
+			firmwareVersionSelect.add(firmwareOption);
+		}
+
+		firmwareVersionInput.classList.remove('hidden');
+	}
+
+	function showCompatibleNotice(config) {
+		compatibilityTitle.textContent = formatLinks(config.title, config.links);
+		compatibilityMessage.innerHTML = formatLinks(config.message, config.links);
+
+		compatibilityNotice.classList.remove('hidden');
+		incompatibilityNotice.classList.add('hidden');
+	}
+
+	function showIncompatibleNotice() {
+		compatibilityNotice.classList.add('hidden');
+		incompatibilityNotice.classList.remove('hidden');
+	}
+
+	function validateWiiU() {
+		// * No validation needed
+		showCompatibleNotice({
+			title: 'Homebrew Possible',
+			message: 'All Wii U consoles support %aroma%.',
+			links: [
+				{
+					placeholder: '%aroma%',
+					text: 'Aroma CFW',
+					href: 'https://wiiu.hacks.guide'
+				}
+			]
+		});
+	}
+
+	function validate3DS() {
+		// * No validation needed
+		showCompatibleNotice({
+			title: 'Homebrew Possible',
+			message: 'All 3DS family of consoles support %homebrew%.',
+			links: [
+				{
+					placeholder: '%homebrew%',
+					text: 'homebrew',
+					href: 'https://3ds.hacks.guide'
+				}
+			]
+		});
+	}
+
+	function validatePS3(firmware) {
+		firmware = formatPSVersion(firmware);
+
+		if (semver.lt(firmware, '3.56.0')) {
+			showCompatibleNotice({
+				title: 'Homebrew Possible',
+				message: 'PS3\'s on firmware 3.55 and lower can install CFW like %cfw%.',
+				links: [
+					{
+						placeholder: '%cfw%',
+						text: 'any update',
+						href: 'https://consolemods.org/wiki/PS3:Updating_your_Firmware'
+					}
+				]
+			});
+			return;
+		}
+
+		if (semver.lt(firmware, '3.75.0')) {
+			showCompatibleNotice({
+				title: 'Homebrew Possible',
+				message: 'PS3\'s on firmware 3.56 to 3.70 can install %cfw% but must %update%. If you cannot update to a compatible OFW or have a corrupted flash, you must use a %hardware%.',
+				links: [
+					{
+						placeholder: '%cfw%',
+						text: 'CFW',
+						href: 'https://consolemods.org/wiki/PS3:PS3Xploit'
+					},
+					{
+						placeholder: '%update%',
+						text: 'update to a compatible OFW',
+						href: 'https://consolemods.org/wiki/PS3:Updating_your_Firmware#Updating_the_Firmware'
+					},
+					{
+						placeholder: '%hardware%',
+						text: 'hardware flasher (not recommended)',
+						href: 'https://consolemods.org/wiki/PS3:E3_Flasher'
+					}
+				]
+			});
+			return;
+		}
+
+		showCompatibleNotice({
+			title: 'Homebrew Possible',
+			message: 'PS3\'s on firmware 3.75 and newer can install %cfw% but must install additional patches first.',
+			links: [
+				{
+					placeholder: '%cfw%',
+					text: 'CFW',
+					href: 'https://consolemods.org/wiki/PS3:PS3Xploit'
+				}
+			]
+		});
+	}
+
+	function validatePS4(firmware) {
+		firmware = formatPSVersion(firmware);
+
+		if (semver.lt(firmware, '5.5.0')) {
+			showCompatibleNotice({
+				title: 'Homebrew Possible',
+				message: 'PS4\'s on firmware lower than 5.05 can install %cfw% but must %update%.',
+				links: [
+					{
+						placeholder: '%cfw%',
+						text: 'CFW',
+						href: 'https://consolemods.org/wiki/PS4:Standard_Jailbreak#Enabling_Homebrew_5.05-9.00'
+					},
+					{
+						placeholder: '%update%',
+						text: 'update to OFW 5.05 - 9.00',
+						href: 'https://consolemods.org/wiki/PS4:Standard_Jailbreak#Updating_to_desired_firmware'
+					}
+				]
+			});
+			return;
+		}
+
+		if (firmware === '5.5.0') {
+			showCompatibleNotice({
+				title: 'Homebrew Possible',
+				message: 'PS4\'s on firmware 5.05 can install %cfw% and are recommended to STAY on 5.05.',
+				links: [
+					{
+						placeholder: '%cfw%',
+						text: 'CFW',
+						href: 'https://consolemods.org/wiki/PS4:Standard_Jailbreak#Enabling_Homebrew_5.05-9.00'
+					}
+				]
+			});
+			return;
+		}
+
+		// TODO - Add more versions
+		// * Trying to interpret https://consolemods.org/wiki/PS4:Standard_Jailbreak#What_firmware_is_the_best?
+		// * but it's a little confusing, since the listed firmware versions don't account for all firmware
+		// * versions listed on sites like https://darthsternie.net/ps4-firmwares it seems?
+
+		showIncompatibleNotice();
+	}
+
+	consoleSelect.addEventListener('change', function() {
+		firmwareVersionInput.classList.add('hidden');
+		compatibilityNotice.classList.add('hidden');
+		incompatibilityNotice.classList.add('hidden');
+
+		consoles[this.value].selected();
+	});
+
+	firmwareVersionSelect.addEventListener('change', function() {
+		consoles[consoleSelect.value].firmwareSelected(this.value);
+	});
+</script>
