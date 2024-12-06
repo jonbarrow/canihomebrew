@@ -20,7 +20,7 @@ Loosely inspired by https://canijailbreak.com
 - [ ] PS5 (is this really possible yet)
 - [x] PSP
 - [x] PS Vita
-- [ ] Xbox
+- [x] Xbox
 - [ ] Xbox 360
 - [ ] Xbox One family
 - [ ] Xbox Series family
