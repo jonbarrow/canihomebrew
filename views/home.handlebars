@@ -40,6 +40,7 @@
 					<option value="3ds">3DS Family</option>
 				</optgroup>
 				<optgroup label="Sony">
+					<option value="psp">PSP</option>
 					<option value="ps-vita">PS Vita / TV</option>
 					<option value="ps3">PlayStation 3</option>
 					<option value="ps4">PlayStation 4</option>
@@ -93,6 +94,9 @@
 		},
 		'3ds': {
 			selected: validate3DS
+		},
+		'psp': {
+			selected: validatePSP
 		},
 		'ps-vita': {
 			selected: validatePSVita
@@ -371,6 +375,21 @@
 					placeholder: '%homebrew%',
 					text: 'homebrew',
 					href: 'https://3ds.hacks.guide'
+				}
+			]
+		});
+	}
+
+	function validatePSP() {
+		// * No validation needed
+		showCompatibleNotice({
+			title: 'Homebrew Possible',
+			message: 'All PSP family of devices support %CFW%.',
+			links: [
+				{
+					placeholder: '%CFW%',
+					text: 'CFW',
+					href: 'https://www.pspunk.com/psp-cfw'
 				}
 			]
 		});

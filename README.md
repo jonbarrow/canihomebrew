@@ -16,8 +16,7 @@ Loosely inspired by https://canijailbreak.com
 - [x] PS3
 - [ ] PS4 (partially supported)
 - [ ] PS5 (is this really possible yet)
-- [ ] PSP
-- [ ] PSP Go
+- [x] PSP
 - [x] PS Vita
 - [ ] Xbox
 - [ ] Xbox 360
