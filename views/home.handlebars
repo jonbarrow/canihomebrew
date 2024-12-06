@@ -40,6 +40,7 @@
 					<option value="3ds">3DS Family</option>
 				</optgroup>
 				<optgroup label="Sony">
+					<option value="ps-vita">PS Vita / TV</option>
 					<option value="ps3">PlayStation 3</option>
 					<option value="ps4">PlayStation 4</option>
 				</optgroup>
@@ -93,8 +94,11 @@
 		'3ds': {
 			selected: validate3DS
 		},
+		'ps-vita': {
+			selected: validatePSVita
+		},
 		'ps3': {
-			firmwares: [ // Obtained from https://darksoftware.xyz/PS3/FWlist
+			firmwares: [ // * Obtained from https://darksoftware.xyz/PS3/FWlist
 				'4.90',
 				'4.89',
 				'4.88',
@@ -367,6 +371,21 @@
 					placeholder: '%homebrew%',
 					text: 'homebrew',
 					href: 'https://3ds.hacks.guide'
+				}
+			]
+		});
+	}
+
+	function validatePSVita() {
+		// * No validation needed
+		showCompatibleNotice({
+			title: 'Homebrew Possible',
+			message: 'All PS Vita/PS TV family of devices support %CFW%.',
+			links: [
+				{
+					placeholder: '%CFW%',
+					text: 'CFW',
+					href: 'https://vita.hacks.guide'
 				}
 			]
 		});
