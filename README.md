@@ -8,6 +8,7 @@ Loosely inspired by https://canijailbreak.com
 
 - [ ] Better mobile support (works, but UI is jank)
 - [ ] Auto-detect console via user agent, for use in on-console browser
+- [ ] DSi
 - [ ] Wii
 - [x] Wii U
 - [x] 3DS family
