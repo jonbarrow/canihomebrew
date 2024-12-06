@@ -53,6 +53,9 @@
 					<option value="ps3">PlayStation 3</option>
 					<option value="ps4">PlayStation 4</option>
 				</optgroup>
+				<optgroup label="Microsoft">
+					<option value="xbox">Xbox</option>
+				</optgroup>
 			</select>
 		</div>
 
@@ -95,7 +98,7 @@
 	const compatibilityTitle = document.getElementById('compatibilityTitle');
 	const compatibilityMessage = document.getElementById('compatibilityMessage');
 
-	// TODO - Add more consoles like PS Vite, Nintendo Switch, Xbox, etc.
+	// TODO - Add more consoles like PS Vite, Nintendo Switch, etc.
 	const consoles = {
 		'wiiu': {
 			selected: validateWiiU
@@ -108,6 +111,9 @@
 		},
 		'ps-vita': {
 			selected: validatePSVita
+		},
+		'xbox': {
+			selected: validateXbox
 		},
 		'ps3': {
 			firmwares: [ // * Obtained from https://darksoftware.xyz/PS3/FWlist
@@ -413,6 +419,21 @@
 					placeholder: '%CFW%',
 					text: 'CFW',
 					href: 'https://vita.hacks.guide'
+				}
+			]
+		});
+	}
+
+	function validateXbox() {
+		// * No validation needed
+		showCompatibleNotice({
+			title: 'Homebrew Possible',
+			message: 'All Original Xbox models support %endgame%.',
+			links: [
+				{
+					placeholder: '%endgame%',
+					text: 'ENDGAME',
+					href: 'https://consolemods.org/wiki/Xbox:ENDGAME'
 				}
 			]
 		});
